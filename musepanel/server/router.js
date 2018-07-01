@@ -12,13 +12,7 @@ const fs = require("fs");
 const app = express();
 const router = express.Router();
 
-// other static resources should just be served as they are
-router.use(express.static(
-    path.resolve(__dirname, '..', 'build'),
-    { maxAge: '30d' },
-));
-
-function renderPage(req, res, componentInstance){
+function renderPage(res, componentInstance){
 	fs.readFile(path.resolve(__dirname, '..', 'public', 'index.html'), 'utf8', (err, htmlData) => {
 	  if (err) {
 	      console.error('err', err);
@@ -40,7 +34,7 @@ function renderPage(req, res, componentInstance){
 /* All of our endpoints go here */
 
 app.get('/', (req, res) => {
-	renderPage(req, res, <App />);
+	renderPage(res, <App queryParams={req.query}/>);
 });
 
 /********************************/
@@ -49,11 +43,5 @@ app.get('/', (req, res) => {
 app.use(router);
 
 // start the app
-app.listen(3000, (error) => {
-    if (error) {
-        return console.log('something bad happened', error);
-    }
-
-    console.log("listening on port 3000...");
-});
+app.listen(process.env.PORT || 3000, console.log("Listening on port 3000..."));
 
